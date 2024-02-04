@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="ja">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+        <title>卒研タイマー</title>
+        <style>
+            #timer {
+                font-size: 550px;
+                text-align: center;
+            }
+
+            button {
+                font-size: 60px;
+            }
+        </style>
+    </head>
+    <body>
+        <div id="timer"><span id="min">15</span>:<span id="sec">00</span></div>
+        <button id="start">スタート</button>
+        <button id="reset">リセット</button>
+        <script>
+            const min = document.getElementById("min");
+            const sec = document.getElementById("sec");
+            const start = document.getElementById("start");
+            const reset = document.getElementById("reset");
+
+            let countdown;
+            let min_num;
+            let sec_num;
+
+            const audio = new Audio("./sei_ge_bell01.wav");
+
+            function reset_timer() {
+                clearInterval(countdown);
+                countdown = null;
+            }
+
+            function sound(repeat) {
+                let count = 0;
+
+                audio.addEventListener("ended", () => {
+                    count ++;
+                    if (count < repeat) {
+                        audio.currentTime = 0;
+                        audio.play();
+                    }
+                });
+                audio.play();
+            }
+
+            start.addEventListener("click", () => {
+                let time = 900;
+                if (!countdown){
+                    countdown = setInterval(() => {
+                        time --;
+                        min_num = ("00" + Math.trunc(time/60)).slice(-2);
+                        sec_num = ("00" + time%60).slice(-2);
+                        min.textContent = min_num;
+                        sec.textContent = sec_num;
+                        if (min_num == 7 && sec_num == 0){
+                            sound(1);
+                        } else if (min_num == 5 && sec_num == 0) {
+                            sound(2);
+                        } else if (time == 0){
+                            reset_timer();
+                            sound(3);
+                        }
+                    }, 1000)
+                } else {
+                    alert("タイマーがすでに実行されています");
+                }                
+            });
+
+            reset.addEventListener("click", () => {
+                reset_timer();
+                min.textContent = "15";
+                sec.textContent = "00";
+            });
+            
+        </script>
+    </body>
+</html>
